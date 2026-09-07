@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>माझी डेअरी</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eefaf1,#eef4ff,#fff4fb);color:#263238}header{background:linear-gradient(90deg,#087f5b,#12b886,#4c6ef5);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}h1{margin:0;font-size:22px}.wrap{display:flex;min-height:calc(100vh - 55px)}aside{width:220px;background:linear-gradient(180deg,#102a72,#172554);color:#fff;padding:10px;box-shadow:2px 0 8px #ddd}.nav{width:100%;padding:11px;margin:3px 0;border:0;background:transparent;color:#fff;border-radius:7px;text-align:left;cursor:pointer}.nav.active,.nav:hover{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff}.main{flex:1;padding:20px;max-width:1400px;margin:auto}.page{display:none}.page.active{display:block}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card,.box{background:#fff;border-radius:16px;padding:16px;margin-top:16px;box-shadow:0 6px 20px rgba(31,41,55,.10)}.card p{font-size:23px;font-weight:bold}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}input,select{width:100%;padding:9px;margin-top:5px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}.btn{border:0;color:#fff;padding:9px 13px;border-radius:6px;cursor:pointer;margin:4px}.primary{background:#18753a}.secondary{background:#1565c0}.danger{background:#c62828}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:9px;border-bottom:1px solid #eee;text-align:left}th{background:#e8f5e9}.login{min-height:100vh;display:grid;place-items:center;background:#e8f5e9}.loginbox{background:#fff;width:min(400px,90%);padding:28px;border-radius:14px;box-shadow:0 5px 20px #ccc}.loginbox input{margin-bottom:10px}.alert{padding:10px;background:#fff3e0;border-radius:6px;margin:5px 0}@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.wrap{display:block}aside{width:auto;display:flex;overflow:auto}.nav{min-width:110px;text-align:center}.main{padding:10px}.cards,.grid{grid-template-columns:1fr}table{font-size:12px}}
+<style>
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+.cowhero{position:relative;height:330px;border-radius:20px;overflow:hidden;box-shadow:0 10px 28px #bbb}
+.cowhero img{width:100%;height:100%;object-fit:cover}
+.cowtext{position:absolute;bottom:0;left:0;right:0;padding:20px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+.summary{background:linear-gradient(135deg,#fff7d6,#e8f7ff);padding:18px;border-radius:20px}
+.sumgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.sum{padding:14px;border-radius:14px}
+.sum:nth-child(1){background:#dbeafe}.sum:nth-child(2){background:#dcfce7}.sum:nth-child(3){background:#fee2e2}.sum:nth-child(4){background:#f3e8ff}.sum:nth-child(5){background:#fef3c7}.sum:nth-child(6){background:#cffafe}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+</style></style>
+</head>
+<body>
+<div id="login" class="login"><div class="loginbox">
+<h1 style="color:#18753a;text-align:center">🐄 माझी डेअरी</h1>
+<p>दूध उत्पादक शेतकरी व्यवस्थापन</p>
+<input id="loginName" placeholder="शेतकरीचे नाव (नवीन खाते असल्यास)">
+<input id="loginEmail" type="email" placeholder="ई-मेल">
+<input id="loginPass" type="password" placeholder="पासवर्ड (किमान 6 अक्षरे)">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button class="btn primary" style="width:100%" onclick="signUp()">नवीन खाते</button>
+<button class="btn secondary" style="width:100%" onclick="signIn()">लॉगिन</button>
+</div>
+<p id="authMsg" style="font-size:13px;color:#666">☁️ तुमचा data Firebase cloud मध्ये सुरक्षितपणे sync होईल.</p>
+</div></div>
+
+<div id="app" style="display:none">
+<header><h1>🐄 माझी डेअरी</h1><div><span id="user"></span> <button class="btn secondary" onclick="logout()">बाहेर पडा</button></div></header>
+<div class="wrap">
+<aside>
+<button class="nav active" onclick="show('dashboard',this)">🏠 डॅशबोर्ड</button>
+<button class="nav" onclick="show('animals',this)">🐄 जनावरे</button>
+<button class="nav" onclick="show('milk',this)">🥛 दूध</button>
+<button class="nav" onclick="show('expenses',this)">💸 खर्च</button>
+<button class="nav" onclick="show('pregnancy',this)">🤰 गर्भधारणा</button>
+<button class="nav" onclick="show('reports',this)">📊 अहवाल</button>
+</aside>
+<main class="main">
+
+<section id="dashboard" class="page active">
+<h2>🏠 डॅशबोर्ड</h2>
+<div class="hero">
+<div class="cowhero"><img src="cow-dashboard.png" alt="गाय"><div class="cowtext"><h2>🐄 माझी डेअरी</h2><div>निरोगी जनावर • अधिक दूध • अधिक नफा 🌱</div></div></div>
+<div class="summary"><h3>आजचा सारांश 📅</h3><div class="sumgrid">
+<div class="sum">🥛 आजचे दूध<p id="dMilk">0 L</p></div>
+<div class="sum">💰 आजचे उत्पन्न<p id="dIncome">₹0</p></div>
+<div class="sum">💸 आजचा खर्च<p id="dExpense">₹0</p></div>
+<div class="sum">📈 आजचा नफा<p id="dProfit">₹0</p></div>
+<div class="sum">🐄 एकूण जनावरे<p id="dAnimals">0</p></div>
+<div class="sum">🤰 गर्भवती<p id="dashPreg">0</p></div>
+</div></div></div>
+<div class="box"><h3>📊 मागील 10 दिवसांचे दूध</h3><div id="chart"></div></div>
+<div class="box"><h3>⚠️ सूचना</h3><div id="alerts"></div></div>
+</section>
+
+<section id="animals" class="page">
+<h2>🐄 जनावरे</h2>
+<div class="box"><div class="grid">
+<div><label>ID</label><input id="aId" placeholder="G001"></div>
+<div><label>नाव</label><input id="aName" placeholder="लक्ष्मी"></div>
+<div><label>जात</label><input id="aBreed" placeholder="जर्सी"></div><div><label>🐄 गायचा फोटो</label><input id="aPhoto" type="file" accept="image/*"></div>
+<div><label>वय</label><input id="aAge" type="number"></div>
+<div><label>दररोज दूध (L)</label><input id="aMilk" type="number" step=".1"></div>
+<div><label>गर्भवती?</label><select id="aPreg"><option>नाही</option><option>होय</option></select></div>
+<div><label>गर्भधारणा तारीख</label><input id="aPregDate" type="date"></div>
+</div><button class="btn primary" onclick="saveAnimal()">+ जनावर सेव्ह करा</button></div>
+<div class="box"><table><thead><tr><th>फोटो</th><th>ID</th><th>नाव</th><th>जात</th><th>वय</th><th>दूध</th><th>गर्भवती</th><th>कृती</th></tr></thead><tbody id="animalTable"></tbody></table></div>
+</section>
+
+<section id="milk" class="page">
+<h2>🥛 दूध नोंद</h2>
+<div class="box"><div class="grid">
+<div><label>तारीख</label><input id="mDate" type="date"></div>
+<div><label>जनावर ID</label><input id="mAnimal" placeholder="G001"></div>
+<div><label>सकाळचे दूध (L)</label><input id="mMorning" type="number" step=".1"></div>
+<div><label>संध्याकाळचे दूध (L)</label><input id="mEvening" type="number" step=".1"></div>
+<div><label>दूध दर ₹/L</label><input id="mRate" type="number" value="40"></div>
+</div><button class="btn primary" onclick="saveMilk()">+ दूध नोंदवा</button></div>
+<div class="box"><table><thead><tr><th>तारीख</th><th>जनावर</th><th>सकाळ</th><th>संध्याकाळ</th><th>एकूण</th><th>उत्पन्न</th><th>कृती</th></tr></thead><tbody id="milkTable"></tbody></table></div>
+</section>
+
+<section id="expenses" class="page">
+<h2>💸 खर्च</h2>
+<div class="box"><div class="grid">
+<div><label>तारीख</label><input id="eDate" type="date"></div>
+<div><label>प्रकार</label><select id="eType"><option>चारा</option><option>पशुखाद्य</option><option>औषधे</option><option>पशुवैद्यक</option><option>मजुरी</option><option>वीज</option><option>पाणी</option><option>इतर</option></select></div>
+<div><label>रक्कम ₹</label><input id="eAmount" type="number"></div>
+<div><label>विवरण</label><input id="eNote"></div>
+</div><button class="btn primary" onclick="saveExpense()">+ खर्च सेव्ह करा</button></div>
+<div class="box"><table><thead><tr><th>तारीख</th><th>प्रकार</th><th>रक्कम</th><th>विवरण</th><th>कृती</th></tr></thead><tbody id="expenseTable"></tbody></table></div>
+</section>
+
+<section id="pregnancy" class="page">
+<h2>🤰 गर्भधारणा Tracking</h2>
+<div class="box"><table><thead><tr><th>जनावर</th><th>गर्भधारणा तारीख</th><th>अपेक्षित प्रसूती</th><th>उरलेले दिवस</th><th>स्थिती</th></tr></thead><tbody id="pregTable"></tbody></table></div>
+</section>
+
+<section id="reports" class="page">
+<h2>📊 अहवाल</h2>
+<div class="cards">
+<div class="card">🥛 एकूण दूध<p id="rMilk">0 L</p></div>
+<div class="card">💰 एकूण उत्पन्न<p id="rIncome">₹0</p></div>
+<div class="card">💸 एकूण खर्च<p id="rExpense">₹0</p></div>
+<div class="card">📈 निव्वळ नफा<p id="rProfit">₹0</p></div>
+</div>
+<div class="box"><button class="btn primary" onclick="downloadCSV()">📊 Excel साठी CSV</button><button class="btn secondary" onclick="window.print()">📄 PDF Save/Print</button></div>
+<div class="box"><h3>🏆 सर्वाधिक दूध देणारी जनावरे</h3><div id="topAnimals"></div></div>
+</section>
+
+</main></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, setDoc, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyARir_EZjMKvMRpwHUP1RQTeGWTSniAsu8",
+  authDomain: "mazi-dairy.firebaseapp.com",
+  projectId: "mazi-dairy",
+  storageBucket: "mazi-dairy.firebasestorage.app",
+  messagingSenderId: "779416407930",
+  appId: "1:779416407930:web:74738bd31c5569703510c3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser=null, animals=[], milk=[], expenses=[];
+const $=id=>document.getElementById(id);
+function msg(t,err=false){ if($("authMsg")){$("authMsg").textContent=t;$("authMsg").style.color=err?"#c62828":"#18753a";} }
+
+function userCol(name){ return collection(db,"users",currentUser.uid,name); }
+
+async function loadCloud(){
+  animals=[]; milk=[]; expenses=[];
+  for(const [name,target] of [["animals","animals"],["milk","milk"],["expenses","expenses"]]){
+    const snap=await getDocs(userCol(name));
+    snap.forEach(d=>{ let x=d.data(); x._id=d.id; window[target].push(x); });
+  }
+  render();
+}
+
+async function saveCloud(name,id,data){
+  const ref=id?doc(db,"users",currentUser.uid,name,id):doc(userCol(name));
+  await setDoc(ref,data);
+  return ref.id;
+}
+
+async function deleteCloud(name,id){ await deleteDoc(doc(db,"users",currentUser.uid,name,id)); }
+
+async function migrateLocal(){
+  // One-time migration of the old browser prototype data into the signed-in account.
+  const oldKey=localStorage.getItem("dairyKey");
+  if(!oldKey || localStorage.getItem("cloudMigrated_"+currentUser.uid)) return;
+  const oldAnimals=JSON.parse(localStorage.getItem("animals_"+oldKey)||"[]");
+  const oldMilk=JSON.parse(localStorage.getItem("milk_"+oldKey)||"[]");
+  const oldExpenses=JSON.parse(localStorage.getItem("expenses_"+oldKey)||"[]");
+  if(oldAnimals.length||oldMilk.length||oldExpenses.length){
+    for(const x of oldAnimals){ await saveCloud("animals",x.id||undefined,{...x,photo:await compressPhoto(x.photo||"")}); }
+    for(const x of oldMilk){ await saveCloud("milk",undefined,x); }
+    for(const x of oldExpenses){ await saveCloud("expenses",undefined,x); }
+  }
+  localStorage.setItem("cloudMigrated_"+currentUser.uid,"yes");
+}
+
+function compressPhoto(dataUrl){
+  return new Promise(resolve=>{
+    if(!dataUrl || dataUrl.length<100){resolve("");return;}
+    const img=new Image();
+    img.onload=()=>{
+      const max=700, scale=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(img.width*scale)); c.height=Math.max(1,Math.round(img.height*scale));
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      resolve(c.toDataURL("image/jpeg",0.68));
+    };
+    img.onerror=()=>resolve("");
+    img.src=dataUrl;
+  });
+}
+
+window.signUp=async function(){
+  const name=$("loginName").value.trim(), email=$("loginEmail").value.trim(), pass=$("loginPass").value;
+  if(!name){msg("कृपया शेतकरीचे नाव भरा.",true);return}
+  if(!email){msg("कृपया ई-मेल भरा.",true);return}
+  if(pass.length<6){msg("पासवर्ड किमान 6 अक्षरांचा असावा.",true);return}
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await updateProfile(cred.user,{displayName:name});
+    msg("खाते तयार झाले. Cloud data तयार करत आहोत...");
+  }catch(e){msg(authError(e),true);}
+};
+
+window.signIn=async function(){
+  const email=$("loginEmail").value.trim(), pass=$("loginPass").value;
+  if(!email||!pass){msg("ई-मेल आणि पासवर्ड भरा.",true);return}
+  try{ await signInWithEmailAndPassword(auth,email,pass); msg("लॉगिन यशस्वी."); }
+  catch(e){msg(authError(e),true);}
+};
+
+function authError(e){
+  const m={
+    "auth/invalid-credential":"ई-मेल किंवा पासवर्ड चुकीचा आहे.",
+    "auth/email-already-in-use":"या ई-मेलचे खाते आधीच आहे. Login करा.",
+    "auth/weak-password":"पासवर्ड खूप सोपा आहे.",
+    "auth/invalid-email":"ई-मेल चुकीचा आहे."
+  };
+  return m[e.code]||("Login error: "+e.message);
+}
+
+window.logout=async function(){await signOut(auth);};
+
+window.show=function(id,btn){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  $(id).classList.add("active");
+  document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+  render();
+};
+
+function sum(a,k){return a.reduce((s,x)=>s+(+x[k]||0),0)}
+
+window.saveAnimal=async function(){
+  let file=$("aPhoto").files[0];
+  let old=animals.find(a=>a.id===$("aId").value.trim());
+  let finish=async(photo)=>{
+    let x={id:$("aId").value.trim(),name:$("aName").value.trim(),breed:$("aBreed").value,age:$("aAge").value,milk:+$("aMilk").value||0,preg:$("aPreg").value,pregDate:$("aPregDate").value,photo:photo|| (old?old.photo:"")};
+    if(!x.id||!x.name){alert("ID आणि नाव भरा.");return}
+    x.photo=await compressPhoto(x.photo||"");
+    try{
+      const cloudId=old?old._id:("animal_"+x.id);
+      await saveCloud("animals",cloudId,x);
+      if(old){let i=animals.findIndex(a=>a._id===old._id);animals[i]={...x,_id:cloudId};}
+      else animals.push({...x,_id:cloudId});
+      $("aPhoto").value=""; render(); alert("जनावर cloud मध्ये सेव्ह झाले.");
+    }catch(e){alert("Save error: "+e.message);}
+  };
+  if(file){
+    if(file.size>5*1024*1024){alert("फोटो 5 MB पेक्षा कमी असावा.");return}
+    let reader=new FileReader(); reader.onload=e=>finish(e.target.result); reader.readAsDataURL(file);
+  }else finish("");
+};
+
+window.deleteAnimal=async function(i){if(confirm("जनावर delete करायचे?")){try{await deleteCloud("animals",animals[i]._id);animals.splice(i,1);render()}catch(e){alert(e.message)}}};
+
+window.saveMilk=async function(){
+  let x={date:$("mDate").value||new Date().toISOString().slice(0,10),animal:$("mAnimal").value.trim(),morning:+$("mMorning").value||0,evening:+$("mEvening").value||0,rate:+$("mRate").value||0};
+  if(!x.animal){alert("जनावर ID भरा.");return} x.total=x.morning+x.evening;x.income=x.total*x.rate;
+  try{x._id=await saveCloud("milk",undefined,x);milk.push(x);render();alert("दूध नोंद cloud मध्ये सेव्ह झाली.")}catch(e){alert(e.message)}
+};
+
+window.deleteMilk=async function(i){try{await deleteCloud("milk",milk[i]._id);milk.splice(i,1);render()}catch(e){alert(e.message)}};
+
+window.saveExpense=async function(){
+  let x={date:$("eDate").value||new Date().toISOString().slice(0,10),type:$("eType").value,amount:+$("eAmount").value||0,note:$("eNote").value};
+  if(x.amount<=0){alert("रक्कम भरा.");return}
+  try{x._id=await saveCloud("expenses",undefined,x);expenses.push(x);render();alert("खर्च cloud मध्ये सेव्ह झाला.")}catch(e){alert(e.message)}
+};
+
+window.deleteExpense=async function(i){try{await deleteCloud("expenses",expenses[i]._id);expenses.splice(i,1);render()}catch(e){alert(e.message)}};
+
+window.downloadCSV=function(){
+ let rows=[["दूध रेकॉर्ड"],["तारीख","जनावर","सकाळ","संध्याकाळ","एकूण","दर","उत्पन्न"],...milk.map(x=>[x.date,x.animal,x.morning,x.evening,x.total,x.rate,x.income]),[],["खर्च"],["तारीख","प्रकार","रक्कम","विवरण"],...expenses.map(x=>[x.date,x.type,x.amount,x.note])];
+ let csv="\ufeff"+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+ let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="mazi-dairy-report.csv";a.click();
+};
+
+function render(){
+ if(!currentUser)return;
+ $("user").textContent=(currentUser.displayName||currentUser.email||"शेतकरी")+" 👤";
+ $("dAnimals").textContent=animals.length;
+ $("dashPreg").textContent=animals.filter(a=>a.preg==="होय").length;
+ let today=new Date().toISOString().slice(0,10),tm=milk.filter(x=>x.date===today),te=expenses.filter(x=>x.date===today);
+ let mi=sum(tm,"total"),inc=sum(tm,"income"),ex=sum(te,"amount");
+ $("dMilk").textContent=mi.toFixed(1)+" L";$("dIncome").textContent="₹"+inc.toFixed(0);$("dExpense").textContent="₹"+ex.toFixed(0);$("dProfit").textContent="₹"+(inc-ex).toFixed(0);
+ $("animalTable").innerHTML=animals.map((a,i)=>`<tr><td>${a.photo?`<img src="${a.photo}" style="width:60px;height:60px;object-fit:cover;border-radius:8px" alt="गाय">`:"🐄"}</td><td>${a.id}</td><td>${a.name}</td><td>${a.breed}</td><td>${a.age}</td><td>${a.milk} L</td><td>${a.preg}</td><td><button class="btn danger" onclick="deleteAnimal(${i})">Delete</button></td></tr>`).join("");
+ $("milkTable").innerHTML=milk.slice().reverse().map((x,r)=>{let i=milk.length-1-r;return `<tr><td>${x.date}</td><td>${x.animal}</td><td>${x.morning} L</td><td>${x.evening} L</td><td>${x.total} L</td><td>₹${x.income.toFixed(0)}</td><td><button class="btn danger" onclick="deleteMilk(${i})">Delete</button></td></tr>`}).join("");
+ $("expenseTable").innerHTML=expenses.slice().reverse().map((x,r)=>{let i=expenses.length-1-r;return `<tr><td>${x.date}</td><td>${x.type}</td><td>₹${x.amount}</td><td>${x.note||""}</td><td><button class="btn danger" onclick="deleteExpense(${i})">Delete</button></td></tr>`}).join("");
+ $("rMilk").textContent=sum(milk,"total").toFixed(1)+" L";$("rIncome").textContent="₹"+sum(milk,"income").toFixed(0);$("rExpense").textContent="₹"+sum(expenses,"amount").toFixed(0);$("rProfit").textContent="₹"+(sum(milk,"income")-sum(expenses,"amount")).toFixed(0);
+ let map={};milk.forEach(x=>map[x.animal]=(map[x.animal]||0)+x.total);let rank=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5);$("topAnimals").innerHTML=rank.length?rank.map((x,i)=>`<div class="alert">🏆 ${i+1}. ${x[0]} — ${x[1].toFixed(1)} L</div>`).join(""):"अजून दूध नोंद नाही.";
+ $("pregTable").innerHTML=animals.filter(a=>a.preg==="होय"&&a.pregDate).map(a=>{let d=new Date(a.pregDate);d.setDate(d.getDate()+283);let days=Math.ceil((d-new Date())/86400000);let st=days<=7?"🔴 लवकर प्रसूती":days<=30?"🟠 विशेष लक्ष":days<=60?"🟡 प्रसूती जवळ":"🟢 सामान्य";return `<tr><td>${a.id} - ${a.name}</td><td>${a.pregDate}</td><td>${d.toLocaleDateString("mr-IN")}</td><td>${Math.max(days,0)}</td><td>${st}</td></tr>`}).join("");
+ $("alerts").innerHTML=animals.filter(a=>a.preg==="होय"&&a.pregDate).map(a=>{let d=new Date(a.pregDate);d.setDate(d.getDate()+283);let days=Math.ceil((d-new Date())/86400000);return days<=30?`<div class="alert">🔔 ${a.name} ची प्रसूती अंदाजे ${Math.max(days,0)} दिवसांत.</div>`:""}).join("")||"सध्या कोणतीही सूचना नाही.";
+ $("chart").innerHTML="";for(let i=9;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let q=d.toISOString().slice(0,10),v=sum(milk.filter(x=>x.date===q),"total");$("chart").innerHTML+=`<div style="margin:7px 0">${10-i} दिवस <span style="display:inline-block;height:20px;background:#66bb6a;width:${Math.max(4,v*3)}px;border-radius:4px"></span> ${v.toFixed(1)} L</div>`}
+}
+
+onAuthStateChanged(auth, async (user)=>{
+  currentUser=user;
+  if(user){
+    $("login").style.display="none"; $("app").style.display="block";
+    try{
+      await migrateLocal();
+      await loadCloud();
+    }catch(e){alert("Cloud data load error: "+e.message);}
+  }else{
+    $("login").style.display="grid"; $("app").style.display="none";
+  }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+ const email=document.getElementById("loginEmail"),pass=document.getElementById("loginPass");
+ [email,pass].forEach(function(el){if(el) el.addEventListener("keydown",function(e){if(e.key==="Enter") signIn();});});
+});
+</script></body></html>

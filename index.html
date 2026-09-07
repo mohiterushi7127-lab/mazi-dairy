@@ -22,15 +22,13 @@ body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#ee
 <div id="login" class="login"><div class="loginbox">
 <h1 style="color:#18753a;text-align:center">🐄 माझी डेअरी</h1>
 <p>दूध उत्पादक शेतकरी व्यवस्थापन</p>
-<input id="loginName" placeholder="शेतकरीचे नाव (नवीन खाते असल्यास)">
-<div style="font-size:12px;color:#666;margin:-5px 0 8px">नवीन खाते: नाव + ई-मेल + पासवर्ड | जुने खाते: ई-मेल + पासवर्ड</div>
-<input id="loginEmail" type="email" placeholder="ई-मेल">
-<input id="loginPass" type="password" placeholder="पासवर्ड (किमान 6 अक्षरे)">
+<input id="loginName" placeholder="👤 Username (उदा. rushi123)" autocomplete="username">
+<div style="font-size:12px;color:#666;margin:-5px 0 8px">फक्त Username + Password वापरा. Username मध्ये English letters, numbers, . _ - वापरा.</div>
+<input id="loginPass" type="password" placeholder="🔒 Password (किमान 6 अक्षरे)" autocomplete="current-password">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <button class="btn primary" style="width:100%" onclick="signUp()">नवीन खाते</button>
 <button class="btn secondary" style="width:100%" onclick="signIn()">लॉगिन</button>
 </div>
-<button class="btn" style="width:100%;background:#6f42c1;margin-top:8px" onclick="resetPassword()">🔑 पासवर्ड विसरलात?</button>
 <p id="authMsg" style="font-size:13px;color:#666">☁️ तुमचा data Firebase cloud मध्ये सुरक्षितपणे sync होईल.</p>
 </div></div>
 
@@ -121,7 +119,7 @@ body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#ee
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, collection, doc, getDocs, setDoc, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -189,51 +187,50 @@ function compressPhoto(dataUrl){
   });
 }
 
+function usernameEmail(username){
+  return username.toLowerCase().trim()+"@login.mazi-dairy.firebaseapp.com";
+}
+
+function validUsername(username){
+  return /^[a-zA-Z0-9._-]{3,30}$/.test(username);
+}
+
 window.signUp=async function(){
-  const name=$("loginName").value.trim(), email=$("loginEmail").value.trim().toLowerCase(), pass=$("loginPass").value;
-  if(!name){msg("कृपया शेतकरीचे नाव भरा.",true);return}
-  if(!email){msg("कृपया ई-मेल भरा.",true);return}
+  const username=$("loginName").value.trim().toLowerCase(), pass=$("loginPass").value;
+  if(!validUsername(username)){msg("Username 3-30 characters असावा. फक्त A-Z, 0-9, . _ - वापरा.",true);return}
   if(pass.length<6){msg("पासवर्ड किमान 6 अक्षरांचा असावा.",true);return}
   try{
     msg("खाते तयार करत आहोत...");
-    const cred=await createUserWithEmailAndPassword(auth,email,pass);
-    await updateProfile(cred.user,{displayName:name});
+    const cred=await createUserWithEmailAndPassword(auth,usernameEmail(username),pass);
+    await updateProfile(cred.user,{displayName:username});
     msg("✅ खाते तयार झाले. तुमचा cloud data लोड होत आहे...");
   }catch(e){msg(authError(e),true);}
 };
 
 window.signIn=async function(){
-  const email=$("loginEmail").value.trim().toLowerCase(), pass=$("loginPass").value;
-  if(!email||!pass){msg("ई-मेल आणि पासवर्ड भरा.",true);return}
+  const username=$("loginName").value.trim().toLowerCase(), pass=$("loginPass").value;
+  if(!validUsername(username)){msg("कृपया योग्य Username भरा.",true);return}
+  if(!pass){msg("कृपया पासवर्ड भरा.",true);return}
   try{
     msg("लॉगिन करत आहोत...");
-    await signInWithEmailAndPassword(auth,email,pass);
+    await signInWithEmailAndPassword(auth,usernameEmail(username),pass);
     msg("✅ लॉगिन यशस्वी.");
-  }catch(e){msg(authError(e),true);}
-};
-
-window.resetPassword=async function(){
-  const email=$("loginEmail").value.trim().toLowerCase();
-  if(!email){msg("पासवर्ड reset करण्यासाठी आधी ई-मेल भरा.",true);return}
-  try{
-    await sendPasswordResetEmail(auth,email);
-    msg("📧 Password reset link तुमच्या ई-मेलवर पाठवली आहे. Inbox/Spam तपासा.");
   }catch(e){msg(authError(e),true);}
 };
 
 function authError(e){
   const m={
-    "auth/invalid-credential":"ई-मेल किंवा पासवर्ड चुकीचा आहे.",
-    "auth/invalid-login-credentials":"ई-मेल किंवा पासवर्ड चुकीचा आहे.",
-    "auth/email-already-in-use":"या ई-मेलचे खाते आधीच आहे. नवीन खाते बनवू नका; ‘लॉगिन’ वापरा.",
+    "auth/invalid-credential":"Username किंवा Password चुकीचा आहे.",
+    "auth/invalid-login-credentials":"Username किंवा Password चुकीचा आहे.",
+    "auth/email-already-in-use":"हा Username आधीच वापरला आहे. दुसरा Username निवडा.",
     "auth/weak-password":"पासवर्ड किमान 6 अक्षरांचा असावा.",
-    "auth/invalid-email":"ई-मेल चुकीचा आहे.",
-    "auth/user-not-found":"या ई-मेलचे खाते सापडले नाही. नवीन खाते असल्यास ‘नवीन खाते’ वापरा.",
-    "auth/wrong-password":"पासवर्ड चुकीचा आहे.",
+    "auth/invalid-email":"Username चुकीचा आहे.",
+    "auth/user-not-found":"हा Username सापडला नाही. आधी नवीन खाते तयार करा.",
+    "auth/wrong-password":"Password चुकीचा आहे.",
     "auth/too-many-requests":"खूप प्रयत्न झाले. थोड्या वेळाने पुन्हा प्रयत्न करा.",
     "auth/network-request-failed":"Internet connection तपासा आणि पुन्हा प्रयत्न करा.",
     "auth/unauthorized-domain":"ही website Firebase मध्ये Authorized Domain म्हणून add केलेली नाही.",
-    "auth/operation-not-allowed":"Firebase Authentication मध्ये Email/Password login चालू करा."
+    "auth/operation-not-allowed":"Firebase Authentication मध्ये Email/Password login चालू करा. Website वर मात्र Email दिसणार नाही."
   };
   return m[e.code]||("Login error: "+(e.message||e.code));
 }
@@ -246,8 +243,8 @@ window.logout=async function(){
 window.switchAccount=async function(){
   if(confirm("सध्याचे खाते logout करून दुसऱ्या खात्याने login करायचे आहे का?")){
     await signOut(auth);
-    $("loginName").value=""; $("loginEmail").value=""; $("loginPass").value="";
-    msg("दुसऱ्या खात्यासाठी ई-मेल आणि पासवर्ड भरा.");
+    $("loginName").value=""; $("loginPass").value="";
+    msg("दुसऱ्या खात्यासाठी Username आणि Password भरा.");
   }
 };
 
@@ -313,7 +310,7 @@ window.downloadCSV=function(){
 
 function render(){
  if(!currentUser)return;
- $("user").textContent=(currentUser.displayName||currentUser.email||"शेतकरी")+" 👤";
+ $("user").textContent=(currentUser.displayName||"शेतकरी")+" 👤";
  $("dAnimals").textContent=animals.length;
  $("dashPreg").textContent=animals.filter(a=>a.preg==="होय").length;
  let today=localDate(),tm=milk.filter(x=>x.date===today),te=expenses.filter(x=>x.date===today);
@@ -344,7 +341,7 @@ onAuthStateChanged(auth, async (user)=>{
 </script>
 <script>
 document.addEventListener("DOMContentLoaded",function(){
- const email=document.getElementById("loginEmail"),pass=document.getElementById("loginPass");
- [email,pass].forEach(function(el){if(el) el.addEventListener("keydown",function(e){if(e.key==="Enter") signIn();});});
+ const username=document.getElementById("loginName"),pass=document.getElementById("loginPass");
+ [username,pass].forEach(function(el){if(el) el.addEventListener("keydown",function(e){if(e.key==="Enter") signIn();});});
 });
 </script></body></html>
